@@ -1,57 +1,16 @@
-# SwipeColumns jQuery Plugin
+/** Create Variable to Store Element */
+var column_wrapper = jQuery('.column_wrapper');
 
-SwipeColumns jQuery Plugin - [CSS3 Columns](http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/an-introduction-to-the-css3-multiple-column-layout-module/) + [Swipeable Pages](http://labs.rampinteractive.co.uk/touchSwipe/demos/Basic_swipe.html) = [Magic](http://octodex.github.com/nyantocat/)
-
-This jQuery Plugin lets you take your existing HTML Markup and have it automatically take anything that does not fit on the screen, and move it onto a new slide that you can swipe to.  It does this without modifying your HTML at all, so you are not required to rethink your existing markup.  Just throw it in an element, and call this plugin on it, and wammo, Swipeable Columns.
-
-### Required Libraries
-
-* [TouchSwipe jQuery Plugin](https://github.com/mattbryson/TouchSwipe-Jquery-Plugin) - for handling Swipe Events ( without Requiring breaking up content first like other libraries )
-* [Debug Console](http://benalman.com/projects/javascript-debug-console-log)
-
-# Demo Page
-
-I have setup a demo for you to view, but to get an idea, use your mobile device or tablet.  If you wish to view it on the desktop, make sure you size your window to be pretty small, and then refresh the page ;)
-
-[SWIPE COLUMN DEMO](http://lab.peterschmalfeldt.com/swipe-columns-jquery-plugin/demo/)
-
-### HTML Usage ( "column_wrapper" can be named anything, but needs to contain the nested structure and class names )
-
-	<div class="column_wrapper">
-		<div class="columns">
-
-			<div class="page_numbers"></div>
-
-			<!--// PLACE YOUR HTML HERE //-->
-
-		</div>
-	</div>
-
-### Example JavaScript Usage:
-
-	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-	<script src="js/jquery.touchSwipe.min.js"></script>
-	<script src="js/swipe_columns.min.js"></script>
-
-	<script>
-	/** Create Variable to Store Element */
-	var column_wrapper = jQuery('.column_wrapper');
-
-	/** Setup Swipe Columns */
-	jQuery(function(){
-		column_wrapper.SwipeColumns({
-			debug_level: 5,
-			hide_adress_bar: true,
-			column_padding: 20,
-			use_keyboard_navigation: true,
-			generate_page_numbers: true
-		});
+/** Setup Swipe Columns */
+jQuery(function(){
+	column_wrapper.SwipeColumns({
+		debug_level: 5,
+		hide_adress_bar: true,
+		column_padding: 20,
+		use_keyboard_navigation: true,
+		generate_page_numbers: true
 	});
-	</script>
 
-### Listening for Events
-
-	<script>
 	/** Listen for SwipeColumns init function to be triggered */
 	jQuery('body').bind('sc_init.swipe_columns', function(evt, data){
 		console.log(data); // Returns { 'options': options, 'element': element }
@@ -155,4 +114,4 @@ I have setup a demo for you to view, but to get an idea, use your mobile device 
 			}
 		*/
 	});
-	</script>
+});
