@@ -1,6 +1,6 @@
 /*
  * @fileOverview SwipeColumns - jQuery Plugin
- * @version 1.0.0
+ * @version 1.0.1
  *
  * @author Peter Schmalfeldt http://www.github.com/manifestinteractive
  * @see https://github.com/manifestinteractive/swipe-columns-jquery-plugin
@@ -222,7 +222,10 @@
 			animate(column_width * current_page, options.animation_speed);
 		}
 
-		$('body').trigger('sc_swipe_status.swipe_columns', [{ 'phase': phase, 'direction': direction, 'distance': distance }]);
+		if(direction)
+		{
+			$('body').trigger('sc_swipe_status.swipe_columns', [{ 'phase': phase, 'direction': direction, 'distance': distance }]);
+		}
 	}
 
 	/**
@@ -240,10 +243,22 @@
 
 		$('.columns', element).css({
 			'-webkit-transition-duration': (duration/1000).toFixed(1) + 's',
-			'-webkit-transform': 'translate3d('+ value + 'px,0,0)'
+			'-webkit-transform': 'translate3d('+ value + 'px,0,0)',
+
+			'-moz-transition-duration': (duration/1000).toFixed(1) + 's',
+			'-moz-transform': 'translate3d('+ value + 'px,0,0)',
+
+			'-o-transition-duration': (duration/1000).toFixed(1) + 's',
+			'-o-transform': 'translate3d('+ value + 'px,0,0)',
+
+			'transition-duration': (duration/1000).toFixed(1) + 's',
+			'transform': 'translate3d('+ value + 'px,0,0)'
 		});
 
-		$('body').trigger('sc_animate.swipe_columns', [{ 'distance': distance, 'duration': duration }]);
+		if(distance > 0)
+		{
+			$('body').trigger('sc_animate.swipe_columns', [{ 'distance': distance, 'duration': duration }]);
+		}
 	}
 
 	/**
@@ -344,13 +359,25 @@
 				'width': '100%',
 				'height': '100%',
 				'overflow': 'hidden',
-				'position': 'relative',
+				'position': 'absolute',
+
 				'-webkit-overflow-scrolling': 'touch',
+				'-moz-overflow-scrolling': 'touch',
+				'-o-overflow-scrolling': 'touch',
+				'overflow-scrolling': 'touch',
+
 				'-webkit-transform': 'translate3d(0,0,0)',
-				'-moz-box-sizing': 'border-box',
+				'-moz-transform': 'translate3d(0,0,0)',
+				'-0-transform': 'translate3d(0,0,0)',
+				'transform': 'translate3d(0,0,0)',
+
 				'-webkit-box-sizing': 'border-box',
+				'-moz-box-sizing': 'border-box',
+				'-o-box-sizing': 'border-box',
 				'box-sizing': 'border-box'
 			});
+
+			$('.columns', element).css({ 'overflow': 'hidden' });
 
 			// Set Width & Height with update CSS in place
 			column_width = Math.ceil($(element).width());
@@ -367,10 +394,33 @@
 				'padding': options.column_padding + 'px',
 				'margin': '0',
 				'padding-right': '0',
+				'position': 'relative',
+
 				'-webkit-transition-property': '-webkit-transform',
 				'-webkit-transition-duration': '0.5s',
 				'-webkit-transition-timing-function': 'ease-out',
 				'-webkit-transform': 'translate3d(0,0,0)',
+
+				'-moz-transition-property': '-moz-transform',
+				'-moz-transition-duration': '0.5s',
+				'-moz-transition-timing-function': 'ease-out',
+				'-moz-transform': 'translate3d(0,0,0)',
+
+				'-o-transition-property': '-o-transform',
+				'-o-transition-duration': '0.5s',
+				'-o-transition-timing-function': 'ease-out',
+				'-o-transform': 'translate3d(0,0,0)',
+
+				'transition-property': 'transform',
+				'transition-duration': '0.5s',
+				'transition-timing-function': 'ease-out',
+				'transform': 'translate3d(0,0,0)',
+
+				/* Safari and Chrome */
+				'-webkit-column-count': 'auto',
+				'-webkit-column-width': css_column_width + 'px',
+				'-webkit-column-gap': css_column_gap + 'px',
+				'-webkit-column-rule': 'none',
 
 				/* Firefox */
 				'-moz-column-count': 'auto',
@@ -378,11 +428,11 @@
 				'-moz-column-gap': css_column_gap + 'px',
 				'-moz-column-rule': 'none',
 
-				/* Safari and Chrome */
-				'-webkit-column-count': 'auto',
-				'-webkit-column-width': css_column_width + 'px',
-				'-webkit-column-gap': css_column_gap + 'px',
-				'-webkit-column-rule': 'none',
+				/* Opera */
+				'-o-column-count': 'auto',
+				'-o-column-width': css_column_width + 'px',
+				'-o-column-gap': css_column_gap + 'px',
+				'-o-column-rule': 'none',
 
 				/* Non Vendor Prefixed */
 				'column-count': 'auto',
@@ -393,25 +443,20 @@
 
 			// Reset Box Model and Max Widths on all Elements in Columns
 			$('*', element).css({
-				'-moz-box-sizing': 'border-box',
 				'-webkit-box-sizing': 'border-box',
+				'-moz-box-sizing': 'border-box',
+				'-o-box-sizing': 'border-box',
 				'box-sizing': 'border-box',
 				'max-width': css_column_width + 'px'
 			});
 
+			// Fix for figuring out page width if update is true
+			var offset = (updated) ? column_width : 0;
+
 			// Determine number of columns after everything is styled
-			page_count = Math.ceil($('.columns', element)[0].scrollWidth / column_width);
+			page_count = Math.ceil(($('.columns', element)[0].scrollWidth-offset) / column_width);
 
-			$('.columns', element).css({ 'width': ( page_count * column_width ) + 'px' });
-
-			debug.debug({
-				'scroll_width': $('.columns', element)[0].scrollWidth,
-				'new_width': Math.ceil( page_count * column_width ),
-				'column_width': column_width,
-				'column_height': column_height,
-				'page_count': $('.columns', element)[0].scrollWidth / column_width,
-				'updated': false
-			});
+			$('.columns', element).css({ 'width': ( page_count * column_width ) + 'px', 'overflow': 'visible' });
 
 			if(updated)
 			{
@@ -472,10 +517,10 @@
 			var that = this;
 
 			// Unbind existing Keyups on Page
-			$('body').unbind('keyup', function(e){ keyboard_handler.call(that, e); });
+			$('body').off('keyup.swipe_columns');
 
 			// Bind Keyups on Page
-			$('body').bind('keyup', function(e){ keyboard_handler.call(that, e); });
+			$('body').on('keyup.swipe_columns', function(e){ keyboard_handler.call(that, e); });
 		},
 
 		/**
@@ -616,13 +661,13 @@
 			// Listen for orientation changes
 			window.addEventListener('resize', function() {
 				debug.log('Resize Event Fired');
-				setTimeout(function(){ Plugin.prototype.update_layout(true); }, 100);
+				setTimeout(function(){ Plugin.prototype.update_layout(true); }, 10);
 			}, false);
 
 			// Listen for orientation changes
 			window.addEventListener('orientationchange', function() {
 				debug.log('Orientation Change Event Fired');
-				setTimeout(function(){ Plugin.prototype.update_layout(true); }, 100);
+				setTimeout(function(){ Plugin.prototype.update_layout(true); }, 10);
 			}, false);
 		});
 	};
